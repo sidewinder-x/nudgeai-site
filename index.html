@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nudge — The AI Coach in Every Sales Call</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:     #100E0B;
+  --cream:   #FAF8F4;
+  --cream2:  #F2EDE5;
+  --dark:    #100E0B;
+  --dark2:   #1C1916;
+  --dark3:   #272320;
+  --muted:   #6E6660;
+  --muted2:  #9E958D;
+  --border:  #E5DDD4;
+  --accent:  #00B8D9;
+  --warm:    #E8622A;
+  --warm-h:  #D05020;
+  --green:   #1A9E6A;
+  --r:12px;--r2:20px;
+  --shadow:0 2px 20px rgba(16,14,11,.08);
+  --shadow2:0 12px 48px rgba(16,14,11,.16);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;line-height:1.15;letter-spacing:-.025em}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+/* ── Utilities ─────────────────────────────────────────────── */
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:14px 26px;border-radius:11px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;border:none;transition:all .18s;white-space:nowrap;letter-spacing:-.01em}
+.btn-dark{background:var(--ink);color:var(--cream)}
+.btn-dark:hover{background:#2A2520;transform:translateY(-1px);box-shadow:var(--shadow2)}
+.btn-warm{background:var(--warm);color:#fff}
+.btn-warm:hover{background:var(--warm-h);transform:translateY(-1px);box-shadow:0 8px 28px rgba(232,98,42,.35)}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--border)}
+.btn-ghost:hover{background:var(--cream2)}
+.btn-lg{padding:18px 34px;font-size:1rem;border-radius:13px}
+.eyebrow{font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.fade-up{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s ease}
+.fade-up.in{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+
+/* ── NAV ──────────────────────────────────────────────────── */
+nav{position:fixed;inset:0 0 auto;z-index:200;padding:0 28px;height:62px;display:flex;align-items:center;transition:background .25s,box-shadow .25s}
+nav.stuck{background:rgba(250,248,244,.95);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--border)}
+.nav-inner{max-width:1120px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:9px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:-.04em}
+.nav-logo-box{width:30px;height:30px;background:var(--ink);border-radius:8px;display:grid;place-items:center}
+.nav-logo-box svg{width:16px;height:16px}
+.nav-links{display:flex;gap:2px}
+.nav-links a{padding:7px 13px;border-radius:8px;font-size:.875rem;font-weight:500;color:var(--muted);transition:all .15s}
+.nav-links a:hover{color:var(--ink);background:var(--cream2)}
+.nav-cta{display:flex;gap:10px;align-items:center}
+.nav-signin{font-size:.875rem;font-weight:500;color:var(--muted);padding:7px 13px;border-radius:8px;transition:color .15s}
+.nav-signin:hover{color:var(--ink)}
+@media(max-width:768px){.nav-links{display:none}.nav-signin{display:none}}
+
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero{padding:120px 28px 80px;max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr 1.05fr;gap:56px;align-items:center}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:var(--cream2);border:1px solid var(--border);border-radius:100px;padding:6px 14px 6px 8px;margin-bottom:26px}
+.hero-tag-dot{width:22px;height:22px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+.hero-tag-dot svg{width:11px;height:11px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hero-tag span{font-size:.78rem;font-weight:700;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif}
+.hero h1{font-size:clamp(3rem,5.5vw,4.4rem);margin-bottom:22px;max-width:560px}
+.hero h1 em{font-style:normal;color:var(--warm)}
+.hero-sub{font-size:1.1rem;color:var(--muted);line-height:1.75;max-width:440px;margin-bottom:38px}
+.hero-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.hero-note{font-size:.78rem;color:var(--muted2)}
+.hero-note strong{color:var(--muted)}
+
+/* Hero image — no card, no shadow, image bleeds naturally */
+.hero-img-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.hero-img-wrap img{width:100%;max-width:600px;display:block}
+.hero-img-glow{display:none}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding:110px 24px 60px;gap:36px}.hero h1{max-width:100%}.hero-sub{max-width:100%}.hero-img-wrap img{max-width:100%}}
+
+/* ── LOGOS ──────────────────────────────────────────────── */
+.logos{padding:56px 28px;background:var(--cream2)}
+.logos-inner{max-width:1120px;margin:0 auto;text-align:center}
+.logos-label{font-size:.75rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted2);margin-bottom:24px}
+.logos-row{display:flex;justify-content:center;align-items:center;gap:44px;flex-wrap:wrap}
+.logo-pill{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1rem;color:var(--muted2);opacity:.6;letter-spacing:-.02em}
+
+/* ── HOW IT WORKS ─────────────────────────────────────── */
+.how{background:var(--dark);padding:100px 28px}
+.how-inner{max-width:1120px;margin:0 auto}
+.how h2{font-size:clamp(2rem,3.5vw,2.8rem);color:#fff;margin-bottom:14px;max-width:520px}
+.how-sub{color:rgba(255,255,255,.42);font-size:1rem;max-width:440px;margin-bottom:64px;line-height:1.75}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(255,255,255,.06);border-radius:20px;overflow:hidden}
+.step{background:var(--dark2);padding:36px 32px}
+.step-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;margin-bottom:20px}
+.step-icon{font-size:1.8rem;margin-bottom:16px}
+.step h3{font-size:1.05rem;color:#fff;margin-bottom:10px}
+.step p{font-size:.875rem;color:rgba(255,255,255,.4);line-height:1.65}
+@media(max-width:768px){.steps{grid-template-columns:1fr}}
+
+/* ── DOWNLOAD ─────────────────────────────────────────── */
+.download{padding:100px 28px;max-width:1120px;margin:0 auto}
+.download-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.download-copy{max-width:480px}
+.download-copy h2{font-size:clamp(2rem,3.5vw,2.8rem);margin-bottom:18px}
+.download-copy p{color:var(--muted);font-size:1rem;line-height:1.75;margin-bottom:32px}
+.download-btn{display:flex;align-items:center;gap:14px;background:var(--ink);color:var(--cream);padding:18px 28px;border-radius:14px;width:fit-content;transition:all .2s;margin-bottom:14px}
+.download-btn:hover{background:#2A2520;transform:translateY(-2px);box-shadow:var(--shadow2)}
+.download-btn-icon{width:44px;height:44px;background:rgba(255,255,255,.08);border-radius:10px;display:grid;place-items:center;flex-shrink:0}
+.download-btn-icon svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:1.6}
+.download-btn-text{}
+.download-btn-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1rem;margin-bottom:2px}
+.download-btn-sub{font-size:.78rem;color:rgba(255,255,255,.45)}
+.download-note{font-size:.8rem;color:var(--muted2)}
+.download-note a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+
+/* Steps card */
+.steps-card{background:var(--cream2);border:1.5px solid var(--border);border-radius:var(--r2);padding:32px 28px}
+.steps-card h3{font-size:1rem;margin-bottom:20px;color:var(--ink)}
+.onboard-steps{display:flex;flex-direction:column;gap:0}
+.os-item{display:flex;align-items:flex-start;gap:16px;padding:16px 0;border-bottom:1px solid var(--border)}
+.os-item:last-child{border-bottom:none;padding-bottom:0}
+.os-num{width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--cream);display:grid;place-items:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:800;flex-shrink:0;margin-top:1px}
+.os-text{}
+.os-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:3px}
+.os-desc{font-size:.8rem;color:var(--muted);line-height:1.5}
+@media(max-width:900px){.download-grid{grid-template-columns:1fr}}
+
+/* ── FEATURES ─────────────────────────────────────────── */
+.features{background:var(--dark);padding:100px 28px}
+.features-inner{max-width:1120px;margin:0 auto}
+.features-header{margin-bottom:52px}
+.features-header h2{font-size:clamp(2rem,3.5vw,2.8rem);color:#fff;margin-bottom:12px}
+.features-header p{color:rgba(255,255,255,.4);font-size:1rem;max-width:460px;line-height:1.7}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(255,255,255,.05);border-radius:20px;overflow:hidden}
+.feat-card{background:var(--dark2);padding:32px 28px;transition:background .2s}
+.feat-card:hover{background:var(--dark3)}
+.feat-card-icon{font-size:1.5rem;margin-bottom:16px}
+.feat-card h3{font-size:.95rem;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;margin-bottom:9px}
+.feat-card p{font-size:.825rem;color:rgba(255,255,255,.38);line-height:1.65}
+@media(max-width:768px){.feat-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.feat-grid{grid-template-columns:1fr}}
+
+/* ── TESTIMONIALS ─────────────────────────────────────── */
+.testi{padding:100px 28px;max-width:1120px;margin:0 auto}
+.testi h2{font-size:clamp(1.8rem,3vw,2.4rem);text-align:center;margin-bottom:48px}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.tc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r2);padding:28px}
+.tc-stars{color:#F5A000;font-size:.9rem;margin-bottom:14px}
+.tc-quote{font-size:.9rem;color:var(--ink);line-height:1.72;margin-bottom:22px;font-style:italic}
+.tc-author{display:flex;align-items:center;gap:11px}
+.tc-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--warm));display:grid;place-items:center;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:.82rem;color:#fff;flex-shrink:0}
+.tc-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:.85rem;font-weight:700}
+.tc-role{font-size:.75rem;color:var(--muted)}
+@media(max-width:900px){.testi-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:580px){.testi-grid{grid-template-columns:1fr}}
+
+/* ── CTA BANNER ───────────────────────────────────────── */
+.cta-band{background:var(--ink);padding:100px 28px;text-align:center}
+.cta-band h2{font-size:clamp(2.2rem,4vw,3.2rem);color:#fff;max-width:560px;margin:0 auto 18px}
+.cta-band p{color:rgba(255,255,255,.4);font-size:1rem;margin-bottom:36px}
+
+/* ── FOOTER ───────────────────────────────────────────── */
+footer{background:var(--dark2);padding:56px 28px 36px;border-top:1px solid rgba(255,255,255,.05)}
+.footer-inner{max-width:1120px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.footer-logo{display:flex;align-items:center;gap:9px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.1rem;color:#fff;letter-spacing:-.04em;margin-bottom:12px}
+.footer-tagline{font-size:.82rem;color:rgba(255,255,255,.3);max-width:200px;line-height:1.6}
+.footer-col h5{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:16px;font-family:'Plus Jakarta Sans',sans-serif}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.footer-col ul a{font-size:.845rem;color:rgba(255,255,255,.4);transition:color .15s}
+.footer-col ul a:hover{color:rgba(255,255,255,.8)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-copy{font-size:.78rem;color:rgba(255,255,255,.2)}
+@media(max-width:900px){.footer-top{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.footer-top{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-box">
+        <svg viewBox="0 0 20 20" fill="none" stroke="#FAF8F4" stroke-width="2" stroke-linecap="round"><path d="M10 3C6.5 3 4 5.5 4 8.5c0 2 1.1 3.7 2.8 4.7V15h6.4v-1.8C15 12.2 16 10.5 16 8.5 16 5.5 13.5 3 10 3z"/></svg>
+      </div>
+      Nudge
+    </a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#download">Download</a>
+      <a href="#features">Features</a>
+    </div>
+    <div class="nav-cta">
+      <a href="dashboard.html" class="nav-signin">Sign in</a>
+      <a href="#download" class="btn btn-dark" style="padding:9px 18px;font-size:.875rem;border-radius:9px">Download for Mac</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-copy fade-up">
+    <div class="hero-tag">
+      <div class="hero-tag-dot">
+        <svg viewBox="0 0 12 10"><path d="M1 5l3 3.5L11 1"/></svg>
+      </div>
+      <span>Native Swift · No BlackHole · 685 KB</span>
+    </div>
+    <h1>Your AI coach<br>on every <em>sales call.</em></h1>
+    <p class="hero-sub">Nudge слушает оба конца разговора и шепчет нужный coaching-хинт в нужный момент — клиент не видит, ты получаешь мгновенно.</p>
+    <div class="hero-actions">
+      <a href="#download" class="btn btn-warm btn-lg">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 3v10M6 9l4 4 4-4M4 17h12"/></svg>
+        Скачать для Mac
+      </a>
+      <a href="dashboard.html" class="btn btn-ghost btn-lg">See dashboard</a>
+    </div>
+    <p class="hero-note">Бесплатно 14 дней · Без карты · <strong>Native Swift app, 428 KB</strong></p>
+  </div>
+
+  <div class="hero-img-wrap fade-up d1">
+    <div class="hero-img-glow"></div>
+    <img src="hero.png" alt="Nudge AI coaching overlay on a sales call" loading="eager">
+  </div>
+</section>
+
+<!-- LOGOS -->
+<div class="logos">
+  <div class="logos-inner">
+    <p class="logos-label">Trusted by sales teams at</p>
+    <div class="logos-row">
+      <div class="logo-pill">Acme Corp</div>
+      <div class="logo-pill">GrowthStack</div>
+      <div class="logo-pill">Meridian</div>
+      <div class="logo-pill">Apex Sales</div>
+      <div class="logo-pill">Veritas</div>
+      <div class="logo-pill">Nova</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="how-inner">
+    <p class="eyebrow" style="color:rgba(0,184,217,.7);margin-bottom:14px">How it works</p>
+    <h2 class="fade-up">От скачивания до первого хинта<br>за три минуты.</h2>
+    <p class="how-sub fade-up d1">Никаких расширений. Никакого BlackHole. Никакой настройки маршрутизации звука. Скачал — открыл — работает.</p>
+    <div class="steps">
+      <div class="step fade-up">
+        <div class="step-num">Step 01</div>
+        <div class="step-icon">⬇️</div>
+        <h3>Скачай Mac-приложение</h3>
+        <p>428 KB. Нативный Swift — запускается мгновенно, без Python, без зависимостей, без настройки.</p>
+      </div>
+      <div class="step fade-up d1">
+        <div class="step-num">Step 02</div>
+        <div class="step-icon">🎯</div>
+        <h3>Пройди онбординг</h3>
+        <p>Красивый пошаговый экран — заполни продукт, цены, возражения. Nudge сразу знает твой контекст.</p>
+      </div>
+      <div class="step fade-up d2">
+        <div class="step-num">Step 03</div>
+        <div class="step-icon">⚡</div>
+        <h3>Начни звонок — Nudge коучит тебя</h3>
+        <p>Нажми «Start Session» перед Zoom или Meet. Хинты появляются молча поверх экрана. Клиент не видит.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="download" id="download">
+  <div class="download-grid">
+    <div class="download-copy fade-up">
+      <p class="eyebrow" style="margin-bottom:14px">Download</p>
+      <h2>Nudge для Mac.<br>Бесплатно 14 дней.</h2>
+      <p>Скачай, пройди онбординг внутри приложения — и ты коучишь за 3 минуты. Никакой настройки.</p>
+
+      <a href="https://github.com/sidewinder-x/nudgeai-site/releases/download/v3.2/NudgeAI.dmg" class="download-btn" download="NudgeAI.dmg">
+        <div class="download-btn-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        </div>
+        <div class="download-btn-text">
+          <div class="download-btn-title">Download for macOS</div>
+          <div class="download-btn-sub">v3.2 · Native Swift · Apple Silicon · 688 KB</div>
+        </div>
+      </a>
+      <p class="download-note">
+        Windows coming Q3 2026. <a href="#">Join waitlist →</a>
+      </p>
+    </div>
+
+    <div class="steps-card fade-up d1">
+      <h3>After you download</h3>
+      <div class="onboard-steps">
+        <div class="os-item">
+          <div class="os-num">1</div>
+          <div class="os-text">
+            <div class="os-title">Открой NudgeAI.dmg</div>
+            <div class="os-desc">Двойной клик по приложению. Если macOS блокирует: Системные настройки → Конфиденциальность → «Всё равно открыть».</div>
+          </div>
+        </div>
+        <div class="os-item">
+          <div class="os-num">2</div>
+          <div class="os-text">
+            <div class="os-title">Онбординг за 2 минуты</div>
+            <div class="os-desc">Разреши микрофон и запись экрана — приложение объяснит зачем. Заполни продукт, цены, возражения.</div>
+          </div>
+        </div>
+        <div class="os-item">
+          <div class="os-num">3</div>
+          <div class="os-text">
+            <div class="os-title">Настрой в приложении</div>
+            <div class="os-desc">Dashboard, Playbook, Settings — всё в одном окне. Поменяй модель ИИ, язык, API-ключи.</div>
+          </div>
+        </div>
+        <div class="os-item">
+          <div class="os-num">4</div>
+          <div class="os-text">
+            <div class="os-title">Начни сессию — хинты появятся сами</div>
+            <div class="os-desc">Нажми Start Session. Nudge слушает звонок и показывает хинты поверх экрана. BlackHole не нужен.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="features-inner">
+    <div class="features-header fade-up">
+      <p class="eyebrow" style="color:rgba(0,184,217,.7);margin-bottom:12px">Features</p>
+      <h2>Всё для момента,<br>когда решается сделка.</h2>
+      <p>Каждая функция создана для одного: дать тебе нужное слово в нужную секунду.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card fade-up"><div class="feat-card-icon">🎯</div><h3>Обработка возражений в реальном времени</h3><p>Цена, доверие, срочность, авторитет, конкурент, страх изменений — хинт появляется в момент, когда клиент произносит ключевое слово.</p></div>
+      <div class="feat-card fade-up d1"><div class="feat-card-icon">🔇</div><h3>Монитор talk ratio</h3><p>Напоминает когда ты доминируешь в разговоре. Лучшие менеджеры слушают 60%+ времени.</p></div>
+      <div class="feat-card fade-up d2"><div class="feat-card-icon">🧠</div><h3>Стадийный коучинг</h3><p>Знает — ты на дискавери, презентации или закрытии — и настраивает хинт под стадию.</p></div>
+      <div class="feat-card fade-up"><div class="feat-card-icon">🪟</div><h3>Нативный стеклянный overlay</h3><p>Карточка поверх всех окон, видна только тебе. Появляется только с хинтом, исчезает сама через 5 сек.</p></div>
+      <div class="feat-card fade-up d1"><div class="feat-card-icon">🏢</div><h3>Твой продукт — твои хинты</h3><p>Nudge знает твои цены, кейсы и конкурентов. Каждый хинт ссылается на реальные данные твоей компании.</p></div>
+      <div class="feat-card fade-up d2"><div class="feat-card-icon">🔒</div><h3>Аудио не покидает твой Mac</h3><p>Никаких записей, никакого облачного аудио. До ИИ доходит только текст — кратко и не хранится.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi">
+  <h2 class="fade-up">Reps who use Nudge close more.</h2>
+  <div class="testi-grid">
+    <div class="tc fade-up">
+      <div class="tc-stars">★★★★★</div>
+      <p class="tc-quote">"The price objection hint alone paid for six months of the subscription in the first week. I used to freeze up — now I have the exact words."</p>
+      <div class="tc-author"><div class="tc-av">JM</div><div><div class="tc-name">James Mitchell</div><div class="tc-role">Account Executive, GrowthStack</div></div></div>
+    </div>
+    <div class="tc fade-up d1">
+      <div class="tc-stars">★★★★★</div>
+      <p class="tc-quote">"Rolled it out to 8 reps. Average call scores went from 5.4 to 7.9 in one month. The talk ratio nudge alone changed how our reps listen."</p>
+      <div class="tc-author"><div class="tc-av" style="background:linear-gradient(135deg,#D47C3D,#E8622A)">SL</div><div><div class="tc-name">Sara Lindqvist</div><div class="tc-role">VP Sales, Meridian Software</div></div></div>
+    </div>
+    <div class="tc fade-up d2">
+      <div class="tc-stars">★★★★★</div>
+      <p class="tc-quote">"Audio literally never leaves my laptop — I verified it. For compliance-sensitive deals, that's the difference between yes and no."</p>
+      <div class="tc-author"><div class="tc-av" style="background:linear-gradient(135deg,#2D5BE3,#00B8D9)">RK</div><div><div class="tc-name">Ryan Kowalski</div><div class="tc-role">Senior AE, Apex Health</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <h2 class="fade-up">Stop losing deals you should have won.</h2>
+  <p class="fade-up d1">Download Nudge. Your next call is in an hour.</p>
+  <a href="#download" class="btn btn-warm btn-lg fade-up d2">
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 3v10M6 9l4 4 4-4M4 17h12"/></svg>
+    Download for Mac — Free
+  </a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">
+          <div class="nav-logo-box" style="background:rgba(255,255,255,.08)">
+            <svg viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M10 3C6.5 3 4 5.5 4 8.5c0 2 1.1 3.7 2.8 4.7V15h6.4v-1.8C15 12.2 16 10.5 16 8.5 16 5.5 13.5 3 10 3z"/></svg>
+          </div>
+          Nudge
+        </div>
+        <p class="footer-tagline">The silent AI coach in every sales call. Built for closers.</p>
+      </div>
+      <div class="footer-col"><h5>Product</h5><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#download">Download</a></li><li><a href="dashboard.html">Dashboard</a></li></ul></div>
+      <div class="footer-col"><h5>Company</h5><ul><li><a href="#">About</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="mailto:hello@nudge.ai">Contact</a></li></ul></div>
+      <div class="footer-col"><h5>Legal</h5><ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">Security</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Nudge AI, Inc. All rights reserved.</p>
+      <p class="footer-copy">macOS 12+ · Apple Silicon + Intel</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Nav scroll
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('stuck', scrollY > 30), {passive:true});
+
+// Fade-up on scroll
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
+}, {threshold: 0.1});
+document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+
+// Trigger hero immediately
+document.querySelectorAll('.hero .fade-up').forEach(el => {
+  setTimeout(() => el.classList.add('in'), 100);
+});
+</script>
+</body>
+</html>
